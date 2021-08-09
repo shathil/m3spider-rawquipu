@@ -15,6 +15,7 @@ import java.util.concurrent.Executors;
  
 
 public class QuipuServer {
+	private static final String TAG = QuipuServer.class.getSimpleName();
 	
 	private ConcurrentLinkedQueue<PacketInfo> deviceToNetworkUDPQueue;
     private ConcurrentLinkedQueue<QuipuRecord> deviceToNetworkTCPQueue;
@@ -166,18 +167,56 @@ public class QuipuServer {
     	clientOne.udpPerclient();
     	
     }
-
+    
+   
 	public static void main(String[] args) throws IOException {
         if (args.length < 2) {
             System.out.println("Syntax: Tunnel Server <file> <port>");
             return;
         }
         
- 
+        // get the server mac address through ARP resolution.
         int port = Integer.parseInt(args[0]);
-        int type = Integer.parseInt(args[1]);
-        startUdpSock(port);
+        //int type = Integer.parseInt(args[1]);
+        //String serverIP = getInterfaceNetworkAddress(args[1]);
         
+        String ip = null;
+        byte [] mac = new byte[6];
+        NetworkInterface netIface=null;
+		try {
+			netIface = NetworkInterface.getByName(args[1]);
+			mac = netIface.getHardwareAddress();
+		} catch (SocketException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			
+		}
+        Enumeration<InetAddress> inetAddress = netIface.getInetAddresses();
+        InetAddress currentAddress;
+        currentAddress = inetAddress.nextElement();
+        while(inetAddress.hasMoreElements())
+        {
+            currentAddress = inetAddress.nextElement();
+            if(currentAddress instanceof Inet4Address && !currentAddress.isLoopbackAddress())
+            {
+                ip = currentAddress.toString();
+                break;
+            }
+        }
+
+        
+        
+        
+        
+        StringBuilder macs = new StringBuilder();
+        for (int i = 0; i < mac.length; i++) {
+        	macs.append(String.format(
+                "%02X%s", mac[i],
+                (i < mac.length - 1) ? "-" : ""));
+        }
+        
+        //startUdpSock(port);
+        System.out.println(TAG + " server IP : "+ip+ " mac "+ macs.toString());
         
         
 	}    
