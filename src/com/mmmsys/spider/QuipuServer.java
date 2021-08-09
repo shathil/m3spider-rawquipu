@@ -15,6 +15,12 @@ import java.util.concurrent.Executors;
  
 
 public class QuipuServer {
+
+   static {
+     System.loadLibrary("QuipuServer");
+   }
+
+  private native void print();
 	private static final String TAG = QuipuServer.class.getSimpleName();
 	
 	private ConcurrentLinkedQueue<PacketInfo> deviceToNetworkUDPQueue;
@@ -28,7 +34,7 @@ public class QuipuServer {
     private SocketChannel proxysock;
     private DatagramSocket dagsock;
 
-
+    
     public QuipuServer(SocketChannel sock){
     	this.proxysock = sock;
         this.deviceToNetworkUDPQueue = new ConcurrentLinkedQueue<>();
@@ -164,8 +170,8 @@ public class QuipuServer {
     	    }
 
         QuipuServer clientOne = new QuipuServer(serverDgramSocket);
-    	clientOne.udpPerclient();
-    	
+    	//clientOne.udpPerclient();
+    	clientOne.print();	
     }
     
    
@@ -215,9 +221,9 @@ public class QuipuServer {
                 (i < mac.length - 1) ? "-" : ""));
         }
         
-        //startUdpSock(port);
+        startUdpSock(port);
         System.out.println(TAG + " server IP : "+ip+ " mac "+ macs.toString());
-        
+   	//QuipuServer.print();     
         
 	}    
  
